@@ -1,0 +1,2589 @@
+{
+    "pipes": [],
+    "interfaces": [],
+    "injectables": [
+        {
+            "name": "ConfigurationService",
+            "id": "injectable-ConfigurationService-0a175611bcda5e6edc95956c16af0fa1",
+            "file": "src/app/services/configuration.service.ts",
+            "properties": [],
+            "methods": [],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\n\n@Injectable({\n  providedIn: 'root'\n})\n\nexport class ConfigurationService {\n\n  constructor() { }\n\n}\nexport enum apiEndpoint {\n    consultaClienteId = '/cliente/consultaPorID'\n}\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 7
+            },
+            "type": "injectable"
+        },
+        {
+            "name": "LoginService",
+            "id": "injectable-LoginService-35f0436bec066cc962885944294f0ce6",
+            "file": "src/app/services/login.service.ts",
+            "properties": [
+                {
+                    "name": "logged",
+                    "defaultValue": "new Subject<any>()",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 12,
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
+            "methods": [
+                {
+                    "name": "getSessionStatus",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 22
+                },
+                {
+                    "name": "logIn",
+                    "args": [
+                        {
+                            "name": "username",
+                            "type": ""
+                        },
+                        {
+                            "name": "password",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 26,
+                    "jsdoctags": [
+                        {
+                            "name": "username",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "password",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "logOut",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 47
+                },
+                {
+                    "name": "setSessionStatus",
+                    "args": [
+                        {
+                            "name": "logged",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 18,
+                    "jsdoctags": [
+                        {
+                            "name": "logged",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\nimport { Observable, Subject } from 'rxjs';\nimport { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';\nimport { environment } from '../../environments/environment';\n\nconst apiUrl = environment.apiUrl;\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class LoginService {\n  private logged = new Subject<any>();\n\n  constructor(\n    private http: HttpClient\n  ) { }\n\n  setSessionStatus(logged) {\n    this.logged.next(logged);\n  }\n\n  getSessionStatus(): Observable<any> {\n    return this.logged.asObservable();\n  }\n\n  logIn(username, password) {\n    const apiURL = `${apiUrl}login`;\n    const httpOptions = {\n        headers: new HttpHeaders({ 'Content-Type': 'application/json' }),\n        observe: 'response' as 'body'\n    };\n    const body = {\n      usuario: username,\n      password\n    };\n    this.http.post(apiURL, body, httpOptions)\n      .subscribe((data: HttpResponse<any>) => {\n          const token = data.headers.get('authorization');\n          localStorage.setItem('token', token);\n          this.setSessionStatus(true);\n      }, error => {\n        this.setSessionStatus(false);\n        console.log('Error', error);\n      });\n  }\n\n  logOut() {\n    const apiURL = `${apiUrl}logout`;\n    const token = localStorage.getItem('token');\n    const httpOptions = {\n        headers: new HttpHeaders({ Authorization: token })\n    };\n\n    this.http.post(apiURL, {}, httpOptions)\n      .subscribe((data: HttpResponse<any>) => {\n        localStorage.clear();\n        this.setSessionStatus(false);\n      }, error => {\n        console.log('Error', error);\n      });\n  }\n}\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient"
+                    }
+                ],
+                "line": 12,
+                "jsdoctags": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "type": "injectable"
+        },
+        {
+            "name": "MiddlewareService",
+            "id": "injectable-MiddlewareService-6f59db1394d33c04aa1674e9de189d39",
+            "file": "src/app/services/middleware/middleware.service.ts",
+            "properties": [
+                {
+                    "name": "canal",
+                    "defaultValue": "''",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 15,
+                    "modifierKind": [
+                        112
+                    ]
+                },
+                {
+                    "name": "logged",
+                    "defaultValue": "new Subject<any>()",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 14,
+                    "modifierKind": [
+                        112
+                    ]
+                }
+            ],
+            "methods": [
+                {
+                    "name": "post",
+                    "args": [
+                        {
+                            "name": "url",
+                            "type": "string"
+                        },
+                        {
+                            "name": "request",
+                            "type": "any",
+                            "optional": true
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "Observable<any>",
+                    "typeParameters": [],
+                    "line": 23,
+                    "modifierKind": [
+                        114
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "url",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        },
+                        {
+                            "name": "request",
+                            "type": "any",
+                            "optional": true,
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                }
+            ],
+            "description": "",
+            "sourceCode": "import { Injectable } from '@angular/core';\nimport { Observable, Subject, from } from 'rxjs';\nimport { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';\nimport { environment } from '../../../environments/environment';\nimport { apiEndpoint } from '../configuration.service';\n\nconst apiUrl: string = environment.apiUrl;\n\n@Injectable({\n  providedIn: 'root'\n})\nexport class MiddlewareService {\n\n  private logged = new Subject<any>();\n  private canal = '';\n\n  constructor(\n    private http: HttpClient\n  ) {\n    this.canal = '1';\n  }\n\n  public post(url: string, request?: any): Observable<any> {\n    const apiURL = `${apiUrl}${apiEndpoint[url]}`;\n\n    const httpOptions = {\n      headers: new HttpHeaders({\n        'Content-Type': 'application/json',\n        canal: `${this.canal}`\n      }),\n      observe: 'response' as 'body'\n    };\n\n    return from(this.http.post(apiURL, request, httpOptions)\n      .toPromise().then((res: any) => {\n        if (url === 'login') {\n          // do anyting you want\n        } else if (url === 'logout') {\n          // do anyting you want\n        } else {\n          return res;\n        }\n        // return this.storageServ.set(key, res).then(() => {\n        //   if (key === 'login') {\n        //     console.log(res.ticket);\n        //     localStorage.setItem('cookie', res.ticket);\n        //   }\n        //   return res;\n      }\n    ));\n\n    // return new Promise ((resolve, reject) => {\n    //   this.http.post(apiURL, body, httpOptions)\n    //     .toPromise()\n    //     .then((res: any) => {\n    //       resolve(res);\n    //     }, err => {\n    //       reject(err);\n    //     });\n    // });\n\n    // this.http.post(apiURL, request, httpOptions)\n    //   .subscribe((data: HttpResponse<any>) => {\n    //     const token = data.headers.get('authorization');\n    //     localStorage.setItem('token', token);\n    //     this.setSessionStatus(true);\n    //   }, error => {\n    //     this.setSessionStatus(false);\n    //     console.log('Error', error);\n    //   });\n  }\n\n  // setSessionStatus(logged) {\n  //   this.logged.next(logged);\n  // }\n\n  // getSessionStatus(): Observable<any> {\n  //   return this.logged.asObservable();\n  // }\n\n  // logIn(username, password) {\n  //   const apiURL = `${apiUrl}login`;\n  //   const httpOptions = {\n  //     headers: new HttpHeaders({ 'Content-Type': 'application/json' }),\n  //     observe: 'response' as 'body'\n  //   };\n  //   const body = {\n  //     usuario: username,\n  //     password\n  //   };\n  //   this.http.post(apiURL, body, httpOptions)\n  //     .subscribe((data: HttpResponse<any>) => {\n  //       const token = data.headers.get('authorization');\n  //       localStorage.setItem('token', token);\n  //       this.setSessionStatus(true);\n  //     }, error => {\n  //       this.setSessionStatus(false);\n  //       console.log('Error', error);\n  //     });\n  // }\n\n  // logOut() {\n  //   const apiURL = `${apiUrl}logout`;\n  //   const token = localStorage.getItem('token');\n  //   const httpOptions = {\n  //     headers: new HttpHeaders({ Authorization: token })\n  //   };\n\n  //   this.http.post(apiURL, {}, httpOptions)\n  //     .subscribe((data: HttpResponse<any>) => {\n  //       localStorage.clear();\n  //       this.setSessionStatus(false);\n  //     }, error => {\n  //       console.log('Error', error);\n  //     });\n  // }\n}\n",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient"
+                    }
+                ],
+                "line": 15,
+                "jsdoctags": [
+                    {
+                        "name": "http",
+                        "type": "HttpClient",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "type": "injectable"
+        }
+    ],
+    "classes": [
+        {
+            "name": "AppPage",
+            "id": "class-AppPage-4ee91dad524760153d3c0f6f0014153c",
+            "file": "e2e/src/app.po.ts",
+            "type": "class",
+            "sourceCode": "import { browser, by, element } from 'protractor';\n\nexport class AppPage {\n  navigateTo() {\n    return browser.get(browser.baseUrl) as Promise<any>;\n  }\n\n  getTitleText() {\n    return element(by.css('app-root .content span')).getText() as Promise<string>;\n  }\n}\n",
+            "properties": [],
+            "methods": [
+                {
+                    "name": "getTitleText",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 8
+                },
+                {
+                    "name": "navigateTo",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 4
+                }
+            ],
+            "indexSignatures": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "hostBindings": [],
+            "hostListeners": []
+        }
+    ],
+    "directives": [],
+    "components": [
+        {
+            "name": "ActivacionPerfilesComponent",
+            "id": "component-ActivacionPerfilesComponent-5131cdd34825171c42ae7bb5513bdb3d",
+            "file": "src/app/activacion-perfiles/activacion-perfiles.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-activacion-perfiles",
+            "styleUrls": [
+                "./activacion-perfiles.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./activacion-perfiles.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-activacion-perfiles',\n  templateUrl: './activacion-perfiles.component.html',\n  styleUrls: ['./activacion-perfiles.component.scss']\n})\nexport class ActivacionPerfilesComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./activacion-perfiles.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<p>activacion-perfiles works!</p>\n"
+        },
+        {
+            "name": "AppComponent",
+            "id": "component-AppComponent-df43d6a132c880df2d8b47029e776023",
+            "file": "src/app/app.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-root",
+            "styleUrls": [
+                "./app.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./app.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "logged",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 12,
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
+                    "name": "title",
+                    "defaultValue": "'plataforma-cib'",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 11
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 22
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\nimport { LoginService } from './services/login.service';\n// import { MiddlewareService } from './services/middleware/middleware.service';\n\n@Component({\n  selector: 'app-root',\n  templateUrl: './app.component.html',\n  styleUrls: ['./app.component.scss']\n})\nexport class AppComponent implements OnInit {\n  title = 'plataforma-cib';\n  public logged = false;\n\n  constructor(\n    private loginService: LoginService\n  ) {\n    this.loginService.getSessionStatus().subscribe(logged => {\n      this.logged = logged;\n    });\n  }\n\n  ngOnInit() {\n    const token = localStorage.getItem('token');\n    this.logged = token ? true : false;\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./app.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "loginService",
+                        "type": "LoginService"
+                    }
+                ],
+                "line": 12,
+                "jsdoctags": [
+                    {
+                        "name": "loginService",
+                        "type": "LoginService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<app-login></app-login>\n<router-outlet *ngIf=\"logged\"></router-outlet>"
+        },
+        {
+            "name": "AutenticacionComponent",
+            "id": "component-AutenticacionComponent-0b0c443b41dc3eea9e4d8d96019b6425",
+            "file": "src/app/autenticacion/autenticacion.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-autenticacion",
+            "styleUrls": [
+                "./autenticacion.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./autenticacion.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-autenticacion',\n  templateUrl: './autenticacion.component.html',\n  styleUrls: ['./autenticacion.component.scss']\n})\nexport class AutenticacionComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./autenticacion.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<p>autenticacion works!</p>\n"
+        },
+        {
+            "name": "ConsultaClienteComponent",
+            "id": "component-ConsultaClienteComponent-b5b6268ed1189990e42227708e9de019",
+            "file": "src/app/consulta-cliente/consulta-cliente.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-consulta-cliente",
+            "styleUrls": [
+                "./consulta-cliente.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./consulta-cliente.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "titulo",
+                    "defaultValue": "''",
+                    "description": "<p>Texto a mostrar en el titulo de la pagina</p>\n",
+                    "line": 13
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "options",
+                    "defaultValue": "[\n    { id: 1, name: 'Número de Cliente' },\n    { id: 2, name: 'Número de Tarjeta' },\n    { id: 3, name: 'Número de Cuenta'  },\n  ]",
+                    "type": "[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 15,
+                    "modifierKind": [
+                        114
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 23
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-consulta-cliente',\n  templateUrl: './consulta-cliente.component.html',\n  styleUrls: ['./consulta-cliente.component.scss']\n})\nexport class ConsultaClienteComponent implements OnInit {\n\n  /**\n   * Texto a mostrar en el titulo de la pagina\n   */\n  @Input() titulo = '';\n\n  public options = [\n    { id: 1, name: 'Número de Cliente' },\n    { id: 2, name: 'Número de Tarjeta' },\n    { id: 3, name: 'Número de Cuenta'  },\n  ];\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/material-inputs.scss\";\n.contianer-docs {\n    background: white;\n    height: 200px;\n}\n\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 100%;\n}\n\n\n.selector {\n    width: 80%;\n    margin: 0 auto;\n}\n\n.no-selected {\n    fill: #464646 !important;\n}\n\nsvg {\n  fill:white;\n}\n\n\n.select {\n    width: 100%;\n\n    &::after {\n        font-size: 1.5rem;\n        top: 70% !important;\n        border-color: #666 !important;\n    }\n\n    select {\n        width: 100%;\n        border-bottom: 1px solid black;\n        border-radius: 0;\n        background: transparent;\n        border: 0;\n        border-bottom: 1px solid black;\n        font-size: 1.5rem;\n\n        &:hover {\n            border-color: black;\n        }\n\n        &:active,\n        &:focus {\n            outline: none;\n            box-shadow: none;\n        }\n    }\n}\n\n.control {\n    width: 100%;\n    border-bottom: 1px solid black;\n    border-radius: 0;\n    background: transparent;\n    border: 0;\n    border-bottom: 1px solid black;\n    margin: 0 auto;\n    padding: 0;\n    // padding-top: 10px !important;\n\n    // font-size: 1.5rem;\n    // height: 2.5em;\n}\n\n.input {\n    padding: 0.625rem, 0.125rem !important;\n    // padding: 0.625rem, 0.125rem 0.125rem 0.625rem !important;\n    height: 2.5em !important;\n    font-size: 1.5rem !important;\n}",
+                    "styleUrl": "./consulta-cliente.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 19
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\" [innerHTML]=\"titulo\"></h1>\n<div class=\"contianer-docs\">\n    <div class=\"columns\">\n        <div class=\"column \">\n            <div class=\"selector\">\n                <span>Selecciona el tipo de identificador del cliente</span>\n                <br>\n                <form #form=\"ngForm\" class=\"select\">\n                    <select name=\"options\" ngModel>\n                        <option value=\"\" disabled>Selecciona una opción</option>\n                        <option *ngFor=\"let option of options\" [ngValue]=\"option\">\n                            {{ option.name }}\n                        </option>\n                    </select>\n                </form>\n            </div>\n        </div>\n        <div class=\"column\">\n            <div class=\"selector\">\n                <span>Ingrese el número del identificador seleccionado</span>\n                <br>\n                <div class=\"control\">\n                    <input class=\"input\" type=\"text\" required>\n                </div>\n                <!-- <form #f=\"ngForm\" class=\"select\">\n                    <select name=\"options\" ngModel>\n                        <option value=\"\" disabled>Selecciona una opción</option>\n                        <option *ngFor=\"let option of options\" [ngValue]=\"option\">\n                            {{ option.name }}\n                        </option>\n                    </select>\n                </form> -->\n            </div>\n        </div>\n    </div>\n</div>"
+        },
+        {
+            "name": "DocumentsResultComponent",
+            "id": "component-DocumentsResultComponent-b3c80687ff893fdfa705d997b33dc2da",
+            "file": "src/app/documents-result/documents-result.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-documents-result",
+            "styleUrls": [
+                "./documents-result.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./documents-result.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-documents-result',\n  templateUrl: './documents-result.component.html',\n  styleUrls: ['./documents-result.component.scss']\n})\nexport class DocumentsResultComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/material-inputs.scss\";\n.corner {\n    font-size: 32pt;\n    font-weight: 100;\n    top: -9px;\n    position: relative;\n}\n\n.buttonsCol {\n    text-align: right;\n}\n\n.subtitle {\n    margin-top: -40px !important;\n}\n\n.contianer-docs {\n    background: #9c27b02e;\n    height: 700px;\n}\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 100%;\n}\n\n\n.control {\n    margin: 0;\n}\n\ntable.documents {\n    width: 90%;\n\n    tr:hover {\n        background: #607d8b1a;\n    }\n\n    td {\n        padding: 5px;\n\n        &.autenticidad {\n            font-size: 21pt;\n            color: #8BC34A;\n        }\n\n    }\n}\n\n.button {\n    height: 2.5em;\n}",
+                    "styleUrl": "./documents-result.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\">DIGITALIZACIÓN DE DOCUMENTOS</h1>\n<h2 class=\"subtitle\"> <span class=\"corner\">⌞</span>RESUMEN DE RESULTADOS</h2>\n\n\n<div class=\"contianer-docs\">\n    <div class=\"columns\">\n        <div class=\"column has-text-centered\">\n\n            <div class=\"has-text-weight-medium\">\n                Resultado de la autenticidad del documento\n            </div>\n            <br>\n            <div class=\"rows\">\n                <div class=\"row\">\n                    <img src=\"https://via.placeholder.com/350x200\"\n                        alt=\"Logo\">\n                </div>\n                <br>\n                <div class=\"row\">\n                    <img src=\"https://via.placeholder.com/350x200\"\n                        alt=\"Logo\">\n                </div>\n            </div>\n\n        </div>\n        <div class=\"column\">\n            Validación generada el:<br>\n            02/abril/2018 13:41 hrs\n\n            <table class=\"documents\">\n                <tbody>\n                    <tr>\n                        <td>No. de folio OCR</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>Apellido Paterno</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>Apellido Materno</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>Nombre</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>CURP</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>Emisión</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>Clave de elector</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>CIC</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n                    <tr>\n                        <td>RFC</td>\n                        <td>\n                            <div class=\"control\">\n                                <input class=\"input\"\n                                    type=\"text\"\n                                    tabindex=\"1\"\n                                    required>\n                                <i class=\"bar\"></i>\n                            </div>\n\n                        </td>\n                        <td>\n                            <i class=\"fas fa-pencil-alt\"></i>\n                        </td>\n                    </tr>\n\n                    <tr>\n                        <td>Porcentaje de <br>autenticidad</td>\n                        <td class=\"autenticidad\">\n                            98%\n                        </td>\n                    </tr>\n                </tbody>\n            </table>\n\n            <br>\n            <div class=\"columns\">\n                <div class=\"column buttonsCol\">\n                    <button class=\"button is-text\">Cancelar</button>\n                    <button class=\"button is-dark\">Aceptar</button>\n                </div>\n            </div>\n        </div>\n\n\n    </div>\n</div>\n"
+        },
+        {
+            "name": "DocumentsScanComponent",
+            "id": "component-DocumentsScanComponent-9c5c424ddf5ba3c76109f9b92cd89676",
+            "file": "src/app/documents-scan/documents-scan.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-documents-scan",
+            "styleUrls": [
+                "./documents-scan.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./documents-scan.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-documents-scan',\n  templateUrl: './documents-scan.component.html',\n  styleUrls: ['./documents-scan.component.scss']\n})\nexport class DocumentsScanComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".contianer-docs {\n    background: #33644788;\n    height: 700px;\n}\n\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 100%;\n}\n\n\n.selector-doc {\n    width: 60%;\n    margin: 0 auto;\n}\n\n.no-selected {\n    fill: #464646 !important;\n}\n\nsvg {\n  fill:white;\n}\n\n\n.select {\n    width: 100%;\n\n    &::after {\n        font-size: 1.5rem;\n        top: 70% !important;\n        border-color: #666 !important;\n    }\n\n    select {\n        width: 100%;\n        border-bottom: 1px solid black;\n        border-radius: 0;\n        background: transparent;\n        border: 0;\n        border-bottom: 1px solid black;\n        font-size: 1.5rem;\n\n        &:hover {\n            border-color: black;\n        }\n\n        &:active,\n        &:focus {\n            outline: none;\n            box-shadow: none;\n        }\n    }\n}\n",
+                    "styleUrl": "./documents-scan.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\">DIGITALIZACIÓN DE DOCUMENTOS</h1>\n\n<div class=\"contianer-docs\">\n    <div class=\"columns\">\n        <div class=\"column \">\n            <div class=\"selector-doc\">\n                <span>Selecciona el tipo de documento</span>\n                <br>\n                <div class=\"select\">\n                    <select>\n                        <option>INE</option>\n                        <option>PASAPORTE</option>\n                    </select>\n                </div>\n            </div>\n        </div>\n        <div class=\"column\">\n            <p class=\"has-text-centered\">\n                Coloca el documento en el escáner y <br>\n                presiona el botón para digitalizar\n            </p>\n            <br>\n            <div class=\"rows\">\n                <div class=\"row\">\n                    <img class=\"no-selected\" src=\"assets/icons/icon-scanner.svg\" alt=\"Logo\">\n                </div>\n                <br>\n                <br>\n                <br>\n                <div class=\"row\">\n                    <img src=\"https://via.placeholder.com/200x200\"\n                        alt=\"Logo\">\n                    <div class=\"has-text-weight-medium\">\n                        Reverso\n                    </div>\n\n                </div>\n            </div>\n\n        </div>\n    </div>\n</div>"
+        },
+        {
+            "name": "EscaneoDiezHuellasComponent",
+            "id": "component-EscaneoDiezHuellasComponent-2433a04078454dab59ba43fc3d8abf97",
+            "file": "src/app/escaneo-diez-huellas/escaneo-diez-huellas.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-escaneo-diez-huellas",
+            "styleUrls": [
+                "./escaneo-diez-huellas.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./escaneo-diez-huellas.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-escaneo-diez-huellas',\n  templateUrl: './escaneo-diez-huellas.component.html',\n  styleUrls: ['./escaneo-diez-huellas.component.scss']\n})\nexport class EscaneoDiezHuellasComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".big {\n    font-size: 17pt;\n}",
+                    "styleUrl": "./escaneo-diez-huellas.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\">ESCANEO DE HUELLAS DIGITALES</h1>\n<br>\n\n<span>\n    Escanea las huellas según el orden que se muestra:\n</span>\n<br><br>\n<div class=\"columns\">\n    <div class=\"column has-text-centered\">\n        <img src=\"https://via.placeholder.com/170x170\" alt=\"\"><br>\n        Escanear<br>\n        <span class=\"big\">Izquierda</span>\n    </div>\n    <div class=\"column has-text-centered\">\n        <img src=\"https://via.placeholder.com/170x170\" alt=\"\"><br>\n        Escanear<br>\n        <span class=\"big\">Derecha</span>\n    </div>\n    <div class=\"column has-text-centered\">\n        <img src=\"https://via.placeholder.com/170x170\" alt=\"\"><br>\n        Escanear<br>\n        <span class=\"big\">Pulgares</span>\n    </div>\n</div>\n\n<button class=\"button\">Continuar</button>"
+        },
+        {
+            "name": "LoginComponent",
+            "id": "component-LoginComponent-863f6b45232a440f4f7a56fcf8965e5c",
+            "file": "src/app/login/login.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-login",
+            "styleUrls": [
+                "./login.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./login.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "isLoading",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 25,
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
+                    "name": "logged",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 26,
+                    "modifierKind": [
+                        114
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "goToLogged",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 44
+                },
+                {
+                    "name": "login",
+                    "args": [
+                        {
+                            "name": "form",
+                            "type": "NgForm"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 38,
+                    "modifierKind": [
+                        114,
+                        120
+                    ],
+                    "jsdoctags": [
+                        {
+                            "name": "form",
+                            "type": "NgForm",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "logOut",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 34,
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 28
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\nimport { NgForm } from '@angular/forms';\nimport { Router } from '@angular/router';\nimport { LoginService } from '../services/login.service';\n\n@Component({\n    selector: 'app-login',\n    templateUrl: './login.component.html',\n    styleUrls: ['./login.component.scss']\n})\nexport class LoginComponent implements OnInit {\n    constructor(\n        private router: Router,\n        private loginService: LoginService\n    ) {\n        this.loginService.getSessionStatus().subscribe(logged => {\n            this.logged = logged;\n            this.isLoading = false;\n            if (this.logged) {\n                this.goToLogged();\n            }\n        });\n    }\n\n    public isLoading = false;\n    public logged = false;\n\n    ngOnInit() {\n        const token = localStorage.getItem('token');\n        this.logged = token ? true : false;\n        this.loginService.setSessionStatus(this.logged);\n    }\n\n    public logOut() {\n        this.loginService.logOut();\n    }\n\n    public async login(form: NgForm) {\n        await this.loginService.logIn(form.value.username, form.value.password);\n        this.isLoading = true;\n        form.resetForm();\n    }\n\n    goToLogged() {\n        this.router.navigateByUrl('onboarding');\n    }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/theme\";\n\n$input-label: white;\n$input-color: white;\n$input-color-value: white;\n$input-font-size: 1.5rem;\n$input-label-font-size: 1.3rem;\n@import \"../../scss/material-inputs\";\n\n.title {\n    color: white;\n    font-size: 40px;\n}\n\n.subtitle {\n    color: white;\n    font-size: 20px;\n}\n\n.login-container {\n    // z-index: 1;\n    height: 100%;\n    width: 100%;\n    padding: 90px;\n    background: $background-menu;\n    transition: width cubic-bezier(0.6, -0.28, 0.74, 0.05) 1s, padding 2s, height 3s;\n\n    .columns {\n        height: 100%;\n        transition: opacity cubic-bezier(0.6, -0.28, 0.74, 0.05) 1s;\n    }\n\n    &.hidden {\n        width: 0;\n        height: 0;\n        padding: 0;\n        overflow: hidden;\n\n        .columns {\n            opacity: 0;\n        }\n    }\n}\n\n.right-line {\n    height: 100%;\n    border-right: 1px solid white;\n}\n\n.form-login {\n    width: 60%;\n    margin: 0 auto;\n}\n\na {\n    color: $input-color;\n}\n\n.button-login {\n    background: none;\n    color: $input-color;\n    outline: none;\n    border: 0;\n    font-size: 21pt;\n    padding: 6px;\n\n    &.is-loading {\n        &::after {\n            border-left: 2px solid white;\n            border-bottom: 2px solid white;\n        }\n    }\n}\n\nimg {\n    width: 45px;\n    height: 45px;\n    margin: 15px;\n}\n",
+                    "styleUrl": "./login.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "router",
+                        "type": "Router"
+                    },
+                    {
+                        "name": "loginService",
+                        "type": "LoginService"
+                    }
+                ],
+                "line": 11,
+                "jsdoctags": [
+                    {
+                        "name": "router",
+                        "type": "Router",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    },
+                    {
+                        "name": "loginService",
+                        "type": "LoginService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<app-menu></app-menu>\n<section class=\"login-container\"\n    [ngClass]=\"{'hidden': logged}\">\n    <div class=\"columns is-desktop is-vcentered\">\n        <div class=\"column is-one-third right-line\">\n            <div class='rows'>\n                <div class='row is-full'>\n                    <img src=\"assets/icons/imagotipo_cibanco.svg\"\n                    style=\"width: 235px; height: 150px\"\n                    alt=\"Logo\">\n                    <!-- <img src=\"https://via.placeholder.com/300x150\"\n                        alt=\"Logo\"> -->\n                </div>\n                <div class='row is-full'>\n                    <h1 class=\"title\">Bienvenido a CIBiometría</h1>\n                    <h2 class=\"subtitle\">redefiniendo la banca, redefiniendo el verde.</h2>\n                </div>\n            </div>\n        </div>\n        <div class=\"column is-two-third\">\n            <div class=\"form-login\">\n                <form #formLogin=\"ngForm\"\n                    (ngSubmit)=\"login(formLogin)\"\n                    novalidate>\n                    <div class=\"control\">\n                        <input class=\"input\"\n                            name=\"username\"\n                            ngModel\n                            type=\"text\"\n                            tabindex=\"1\"\n                            required>\n                        <label class=\"label\">Username</label>\n                        <i class=\"bar\"></i>\n                    </div>\n                    <br>\n                    <div class=\"control\">\n                        <input class=\"input\"\n                            type=\"password\"\n                            ngModel\n                            name=\"password\"\n                            tabindex=\"2\"\n                            required>\n                        <label class=\"label\">Password</label>\n                        <i class=\"bar\"></i>\n                    </div>\n\n                    <div class=\"columns\">\n                        <div class=\"column is-four-fifths\">\n                            <!-- <a href=\"\"\n                                class=\"href\">¿Olvidaste tu contraseña?</a> -->\n                        </div>\n                        <div class=\"column has-text-right\">\n                            <button class=\"button button-login is-fullwidth\"\n                                [ngClass]=\"{'is-loading': isLoading}\"\n                                #btnLogin\n                                tabindex=\"3\"\n                                type=\"submit\">\n                                <span class=\"icon is-small\">\n                                    <i class=\"fas fa-arrow-right\"></i>\n                                </span>\n                            </button>\n                        </div>\n                    </div>\n                </form>\n            </div>\n\n        </div>\n    </div>\n</section>"
+        },
+        {
+            "name": "LoginHuellaComponent",
+            "id": "component-LoginHuellaComponent-1a3176b149a869c08875010460f0a232",
+            "file": "src/app/login-huella/login-huella.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-login-huella",
+            "styleUrls": [
+                "./login-huella.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./login-huella.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-login-huella',\n  templateUrl: './login-huella.component.html',\n  styleUrls: ['./login-huella.component.scss']\n})\nexport class LoginHuellaComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".container {\n    padding-top: 60px !important;\n    padding-left: 100px;\n    padding-right: 100px;\n    // background-image: url('../../assets/icons/backgound_general.svg');\n}\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 500px;\n}\n\n.column {\n    text-align: center;\n}\n\n\n.img-btn {\n    font-size: 79pt;\n    // border: 1px solid black;\n    border: 1px solid #464646;\n    border-radius: 50%;\n    height: 150px;\n    width: 150px;\n    margin: 0 auto;\n    cursor: pointer;\n\n    // &:hover {\n    //     border-color: #4caf50;\n    // }\n}\n\napp-login-huella {\n    height: 100%;\n}\n\n.title {\n    font-size: 40px;\n    font-family: avenir;\n    font-weight: 600;\n}\n\n.subtitle {\n    font-size: 30px;\n    font-family: avenir;\n}\n",
+                    "styleUrl": "./login-huella.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<div class=\"container\">\n    <h1 class=\"title\">Hola Julián,</h1>\n    <h2 class=\"subtitle\">¿En qué trabajaremos hoy?</h2>\n    <!-- <h2 class=\"subtitle\">Elige un flujo</h2>\n    <span class=\"icon is-small\">\n        <i class=\"fas fa-arrow-left\"></i>\n    </span> -->\n    <br>\n    <div class=\"columns\">\n        <div class=\"column\"></div>\n        <div class=\"column\">\n            <h1 class=\"title\">Onboarding</h1>\n            <div class=\"img-btn\">\n                <!-- <i class=\"fas fa-fingerprint\"></i> -->\n                <img src=\"assets/icons/entrar_conhuella.svg\" alt=\"Logo\">\n                <!-- <img src=\"assets/entrar_conhuella_activado.svg\" alt=\"Logo\"> -->\n            </div>\n            <br>\n            <span>Coloca tu huella</span>\n        </div>\n        <div class=\"column\">\n        </div>\n    </div>\n</div>"
+        },
+        {
+            "name": "MenuComponent",
+            "id": "component-MenuComponent-05e06d51c43e864f35c253f3c12b8294",
+            "file": "src/app/menu/menu.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-menu",
+            "styleUrls": [
+                "./menu.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./menu.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "logged",
+                    "defaultValue": "false",
+                    "type": "",
+                    "optional": false,
+                    "description": "",
+                    "line": 10,
+                    "modifierKind": [
+                        114
+                    ]
+                },
+                {
+                    "name": "menuElements",
+                    "defaultValue": "[\n    {\n      name: 'Onboarding',\n      active: false,\n      icon: 'assets/icons/menu_onboarding.svg',\n      activeIcon: 'assets/icons/menu_onboarding_activado.svg',\n      goesTo: '/onboarding',\n      border: false\n    },\n    {\n      name: 'Verificación',\n      active: false,\n      icon: 'assets/icons/menu_verificacion.svg',\n      activeIcon: 'assets/icons/menu_verificacion_activado.svg',\n      goesTo: '/verificacion',\n      border: false\n    },\n    {\n      name: 'Validación',\n      active: false,\n      icon: 'assets/icons/menu_validacion.svg',\n      activeIcon: 'assets/icons/menu_validacion_activado.svg',\n      goesTo: '/validacion',\n      border: false\n    },\n    {\n      name: 'Autenticación',\n      active: false,\n      icon: 'assets/icons/menu_autenticacion.svg',\n      activeIcon: 'assets/icons/menu_autenticacion_activado.svg',\n      goesTo: '/autenticacion',\n      border: true\n    },\n    {\n      name: 'Activación de perfiles',\n      active: false,\n      icon: 'assets/icons/menu_activacionperfiles.svg',\n      activeIcon: 'assets/icons/menu_activacionperfiles_activado.svg',\n      goesTo: '/activacionPerfiles',\n      border: false\n    },\n    {\n      name: 'Reportes',\n      active: false,\n      icon: 'assets/icons/menu_reportes.svg',\n      activeIcon: 'assets/icons/menu_reportes_activado.svg',\n      goesTo: '/reportes',\n      border: true\n    }\n  ]",
+                    "type": "[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 11,
+                    "modifierKind": [
+                        114
+                    ]
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "getLiClass",
+                    "args": [
+                        {
+                            "name": "menuItem",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 76,
+                    "jsdoctags": [
+                        {
+                            "name": "menuItem",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 70
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\nimport { LoginService } from '../services/login.service';\n\n@Component({\n  selector: 'app-menu',\n  templateUrl: './menu.component.html',\n  styleUrls: ['./menu.component.scss']\n})\nexport class MenuComponent implements OnInit {\n  public logged = false;\n  public menuElements = [\n    {\n      name: 'Onboarding',\n      active: false,\n      icon: 'assets/icons/menu_onboarding.svg',\n      activeIcon: 'assets/icons/menu_onboarding_activado.svg',\n      goesTo: '/onboarding',\n      border: false\n    },\n    {\n      name: 'Verificación',\n      active: false,\n      icon: 'assets/icons/menu_verificacion.svg',\n      activeIcon: 'assets/icons/menu_verificacion_activado.svg',\n      goesTo: '/verificacion',\n      border: false\n    },\n    {\n      name: 'Validación',\n      active: false,\n      icon: 'assets/icons/menu_validacion.svg',\n      activeIcon: 'assets/icons/menu_validacion_activado.svg',\n      goesTo: '/validacion',\n      border: false\n    },\n    {\n      name: 'Autenticación',\n      active: false,\n      icon: 'assets/icons/menu_autenticacion.svg',\n      activeIcon: 'assets/icons/menu_autenticacion_activado.svg',\n      goesTo: '/autenticacion',\n      border: true\n    },\n    {\n      name: 'Activación de perfiles',\n      active: false,\n      icon: 'assets/icons/menu_activacionperfiles.svg',\n      activeIcon: 'assets/icons/menu_activacionperfiles_activado.svg',\n      goesTo: '/activacionPerfiles',\n      border: false\n    },\n    {\n      name: 'Reportes',\n      active: false,\n      icon: 'assets/icons/menu_reportes.svg',\n      activeIcon: 'assets/icons/menu_reportes_activado.svg',\n      goesTo: '/reportes',\n      border: true\n    }\n  ];\n\n  constructor(\n    private loginService: LoginService\n  ) {\n    this.loginService.getSessionStatus().subscribe(logged => {\n      this.logged = logged;\n    });\n  }\n\n  ngOnInit() {\n    const token = localStorage.getItem('token');\n    this.logged = token ? true : false;\n    this.loginService.setSessionStatus(this.logged);\n  }\n\n  getLiClass(menuItem) {\n    let classString = '';\n    if (menuItem.border) { classString += `border`; }\n    if (menuItem.name === 'Activación de perfiles') { classString += ` activationIcon`; }\n    if (menuItem.name === 'Reportes') { classString += ` activationIcon`; }\n    return classString;\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/theme\";\n\n.menu-login {\n    color: $color-menu;\n    // height: 100%;\n    // width: 100%;\n}\n\n.options {\n    background: linear-gradient(45deg,#276D41, #588E4A);\n    position: fixed;\n    height: 100%;\n    transition: opacity 2s;\n    // z-index: -1;\n\n    &.back {\n        z-index: -1;\n        opacity: 0;\n    }\n\n    li {\n        display: block;\n        width: 100px;\n        height: 100px;\n        text-align: center;\n        cursor: pointer;\n        padding: 5px;\n\n        .icon {\n            width: 50px;\n            border-radius: 50%;\n            height: 50px;\n            font-size: 40px;\n        }\n\n        .icon-dark {\n            background: #333333;\n            color: #468246;\n        }\n\n        .icon-light {\n            background: #DDDDDD;\n            color: #468246;\n        }\n\n        .text {\n            color: white;\n            font-size: 14px;\n        }\n    }\n\n    .li-password {\n        height: fit-content;\n    }\n}\n\n.border {\n    border-bottom: 1px solid white;\n}\n\nimg {\n    width: 45px;\n    height: 45px;\n    margin: 15px;\n}\n\n.activationIcon {\n    padding-top: 15px !important;\n    height: 105px !important;\n}\n\n.reportIcon {\n    padding-top: 15px !important;\n    padding-bottom: 23px !important;\n    height: 105px !important;\n}",
+                    "styleUrl": "./menu.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [
+                    {
+                        "name": "loginService",
+                        "type": "LoginService"
+                    }
+                ],
+                "line": 60,
+                "jsdoctags": [
+                    {
+                        "name": "loginService",
+                        "type": "LoginService",
+                        "tagName": {
+                            "text": "param"
+                        }
+                    }
+                ]
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<nav class=\"menu-login\">\n    <div class=\"options\" [ngClass]=\"{'back': !logged}\">\n        <li>\n            <a routerLink=\"/login\">\n                <img src=\"assets/icons/isotipo_cibanco.svg\" alt=\"Logo\" >\n            </a>\n        </li>\n        <li \n            *ngFor=\"let menuItem of menuElements\" \n            [ngClass]=\"getLiClass(menuItem)\">\n            <a routerLink=\"{{ menuItem.goesTo }}\">\n                <span class=\"icon\">\n                    <img *ngIf=\"!menuItem.active\" src=\"{{ menuItem.icon }}\" alt=\"Logo\">\n                    <img *ngIf=\"menuItem.active\" src=\"{{ menuItem.activeIcon }}\" alt=\"Logo\">\n                </span>\n                <span class=\"text\" *ngIf=\"menuItem.name !== ''\">{{ menuItem.name }}</span>\n            </a>\n        </li>\n        <li>\n            <img src=\"assets/icons/menu_cerrarsesion.svg\" alt=\"Logo\" (click)=\"logOut()\">\n        </li>\n    </div>\n</nav>"
+        },
+        {
+            "name": "OnboardingComponent",
+            "id": "component-OnboardingComponent-78579af279892b2c8ac0fe47415b8e09",
+            "file": "src/app/onboarding/onboarding.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-onboarding",
+            "styleUrls": [
+                "./onboarding.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./onboarding.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [
+                {
+                    "name": "actualStepId",
+                    "defaultValue": "'escaneoHuellas'",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 42
+                },
+                {
+                    "name": "alertType",
+                    "defaultValue": "'success'",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 41
+                },
+                {
+                    "name": "steps",
+                    "defaultValue": "[\n    {\n        id: 'recolectarInformacion',\n        description: 'Recolectar <br> información.'\n    },\n    {\n        id: 'imprimirAvisoAutorizacion',\n        description: 'Imprimir <br> aviso/autorización'\n    },\n    {\n      id: 'escaneoHuellas',\n      description: 'Escaneo <br> de huellas.'\n    },\n    {\n      id: 'validacionDatos',\n      description: 'Validación <br> de datos'\n    },\n    {\n      id: 'altaRevisionDatos',\n      description: 'Alta / Revisión <br> de datos'\n    },\n    {\n      id: 'resumen',\n      description: 'Resumen'\n    },\n    {\n      id: 'impresionComprobantes',\n      description: 'Impresión de <br> comprobantes'\n    }\n  ]",
+                    "type": "[]",
+                    "optional": false,
+                    "description": "",
+                    "line": 9
+                },
+                {
+                    "name": "textAlert",
+                    "defaultValue": "'Autenticación <br> exitosa'",
+                    "type": "string",
+                    "optional": false,
+                    "description": "",
+                    "line": 40
+                }
+            ],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 46
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-onboarding',\n  templateUrl: './onboarding.component.html',\n  styleUrls: ['./onboarding.component.scss']\n})\nexport class OnboardingComponent implements OnInit {\n  steps = [\n    {\n        id: 'recolectarInformacion',\n        description: 'Recolectar <br> información.'\n    },\n    {\n        id: 'imprimirAvisoAutorizacion',\n        description: 'Imprimir <br> aviso/autorización'\n    },\n    {\n      id: 'escaneoHuellas',\n      description: 'Escaneo <br> de huellas.'\n    },\n    {\n      id: 'validacionDatos',\n      description: 'Validación <br> de datos'\n    },\n    {\n      id: 'altaRevisionDatos',\n      description: 'Alta / Revisión <br> de datos'\n    },\n    {\n      id: 'resumen',\n      description: 'Resumen'\n    },\n    {\n      id: 'impresionComprobantes',\n      description: 'Impresión de <br> comprobantes'\n    }\n  ];\n\n  textAlert = 'Autenticación <br> exitosa';\n  alertType = 'success';\n  actualStepId = 'escaneoHuellas';\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/theme\";\n\n\n.container {\n    padding: 100px;\n}\n\n",
+                    "styleUrl": "./onboarding.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 42
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<div class=\"container\">\n    <app-stepper [steps]=\"steps\" [actualStepId]=\"actualStepId\"></app-stepper>\n    <br>\n    <app-documents-scan></app-documents-scan>\n    <app-documents-result></app-documents-result>\n    <app-escaneo-diez-huellas></app-escaneo-diez-huellas>\n    <app-registros-encontrados></app-registros-encontrados>\n    <app-validacion-datos></app-validacion-datos>\n    <app-result-alert [alertType]=\"alertType\" [textAlert]=\"textAlert\"></app-result-alert>\n    <app-resumen></app-resumen>\n</div>"
+        },
+        {
+            "name": "RegistrosEncontradosComponent",
+            "id": "component-RegistrosEncontradosComponent-576f799cd1775db8d97fc8e4e937fb18",
+            "file": "src/app/registros-encontrados/registros-encontrados.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-registros-encontrados",
+            "styleUrls": [
+                "./registros-encontrados.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./registros-encontrados.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-registros-encontrados',\n  templateUrl: './registros-encontrados.component.html',\n  styleUrls: ['./registros-encontrados.component.scss']\n})\nexport class RegistrosEncontradosComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".border-right {\n    border-right: solid 1px black;\n}\n\n.arrow-up {\n    position: absolute;\n}\n\ni {\n    margin-left: 10px;\n}\n\n.results-table {\n    width: 100%;\n}\n\ntd {\n    padding-left: 30px;\n}\n\n.border-right {\n    border-right: solid 1px black;\n}",
+                    "styleUrl": "./registros-encontrados.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\">REGISTROS ENCONTRADOS</h1>\n<br>\n\n<span>\n    Se encontraron 3 coincidencias\n</span>\n<br><br>\n<table class=\"results-table\">\n    <thead>\n        <tr>\n            <td class=\"border-right\"><span class=\"big\">Nombre</span><i class=\"fas fa-sort-up arrow-up\"></i><i class=\"fas fa-sort-down\"></i></td>\n            <td class=\"border-right\"><span class=\"big\">Fecha de nacimiento</span><i class=\"fas fa-sort-up arrow-up\"></i><i class=\"fas fa-sort-down\"></i></td>\n            <td class=\"border-right\"><span class=\"big\">CURP</span><i class=\"fas fa-sort-up arrow-up\"></i><i class=\"fas fa-sort-down\"></i></td>\n            <td><span class=\"big\">RFC</span><i class=\"fas fa-sort-up arrow-up\"></i><i class=\"fas fa-sort-down\"></i></td>\n        </tr>\n    </thead>\n    <tbody>\n        <tr>\n            <td class=\"border-right\">Carolina Montayo López <i class=\"fas fa-arrow-right\"></i></td>\n            <td class=\"border-right\">1989 - 08 - 12</td>\n            <td class=\"border-right\">CAML01234MDFRNP01</td>\n            <td>CAML01234</td>\n        </tr>\n        <tr>\n            <td class=\"border-right\">Carolina Montayo López <i class=\"fas fa-arrow-right\"></i></td>\n            <td class=\"border-right\">1989 - 08 - 12</td>\n            <td class=\"border-right\">CAML01234MDFRNP01</td>\n            <td>CAML01234</td>\n        </tr>\n        <tr>\n            <td class=\"border-right\">Carolina Montayo López <i class=\"fas fa-arrow-right\"></i></td>\n            <td class=\"border-right\">1989 - 08 - 12</td>\n            <td class=\"border-right\">CAML01234MDFRNP01</td>\n            <td>CAML01234</td>\n        </tr>\n    </tbody>\n</table>\n\n<!-- <button class=\"button\">Continuar</button> -->\n<!-- <div class=\"contianer-docs\">\n    <div class=\"columns\">\n        <div class=\"column\">\n            <p class=\"has-text-left\">\n                Se encontraron <span>3</span> coincidencias\n            </p>\n        </div>\n    </div>\n    <div class=\"columns\">\n        <div class=\"column\" style=\"background-color: pink;\">\n            <p class=\"has-text-left\">\n                Nombre\n            </p>\n        </div>\n        <div class=\"column\" style=\"background-color: cyan;\">\n            <p class=\"has-text-left\">\n                Fecha de nacimiento\n            </p>\n        </div>\n        <div class=\"column\" style=\"background-color: chartreuse;\">\n            <p class=\"has-text-left\">\n                CURP\n            </p>\n        </div>\n        <div class=\"column\" style=\"background-color: yellow;\">\n            <p class=\"has-text-left\">\n                RFC\n            </p>\n        </div>\n    </div>\n</div> -->"
+        },
+        {
+            "name": "ReportesComponent",
+            "id": "component-ReportesComponent-18e05cace3e3286d90ccd30f41a8d987",
+            "file": "src/app/reportes/reportes.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-reportes",
+            "styleUrls": [
+                "./reportes.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./reportes.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-reportes',\n  templateUrl: './reportes.component.html',\n  styleUrls: ['./reportes.component.scss']\n})\nexport class ReportesComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./reportes.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<p>reportes works!</p>\n"
+        },
+        {
+            "name": "ResultAlertComponent",
+            "id": "component-ResultAlertComponent-4519bd971be1893530ec0cd5d7b44f22",
+            "file": "src/app/result-alert/result-alert.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-result-alert",
+            "styleUrls": [
+                "./result-alert.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./result-alert.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "alertType",
+                    "defaultValue": "''",
+                    "description": "<p>Tipo de alerta (error, success)</p>\n",
+                    "line": 16
+                },
+                {
+                    "name": "textAlert",
+                    "defaultValue": "''",
+                    "description": "<p>Texto a mostrar en la alerta</p>\n",
+                    "line": 12
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 20
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit, Input } from '@angular/core';\n\n@Component({\n    selector: 'app-result-alert',\n    templateUrl: './result-alert.component.html',\n    styleUrls: ['./result-alert.component.scss']\n})\nexport class ResultAlertComponent implements OnInit {\n    /**\n     * Texto a mostrar en la alerta\n     */\n    @Input() textAlert = '';\n    /**\n     * Tipo de alerta (error, success)\n     */\n    @Input() alertType = '';\n\n    constructor() { }\n\n    ngOnInit() { }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".contianer-docs {\n    border-radius: 40px;\n    height: 700px;\n}\n\n.success {\n    background: linear-gradient(#6A9A4C, #2B6F41);\n}\n\n.error {\n    background-color: #464646;\n}\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 100%;\n}\n\n.alertText {\n    font-size: 30px;\n    color: white;\n    font-weight: 600;\n}\n\n.backImg {\n    position: absolute;\n    margin-left:auto;\n    margin-right:auto;\n    left:0;\n    right:0;\n}\n\n.containerDiv {\n    margin-right: 25%;\n    margin-left: 25%;\n}",
+                    "styleUrl": "./result-alert.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 16
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<div class=\"contianer-docs\" [ngClass]=\"alertType\">\n    <div class=\"columns\">\n        <div class=\"column has-text-centered\">\n            <div class=\"containerDiv\">\n                <div class=\"backImg\">\n                    <img src=\"assets/icons/background_alertas.svg\" alt=\"Logo\">\n                </div>\n                <div>\n                    <img src=\"assets/icons/x-alert.svg\" alt=\"Logo\" *ngIf=\"alertType === 'error'\">\n                    <img src=\"assets/icons/check-alert.svg\" alt=\"Logo\" *ngIf=\"alertType === 'success'\">\n                    <p class=\"alertText\" [innerHTML]=\"textAlert\"></p>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n"
+        },
+        {
+            "name": "ResumenComponent",
+            "id": "component-ResumenComponent-2e73332925fb27ff9ec7f70d8b848fa5",
+            "file": "src/app/resumen/resumen.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-resumen",
+            "styleUrls": [
+                "./resumen.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./resumen.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "cecoban",
+                    "line": 11,
+                    "type": "any"
+                },
+                {
+                    "name": "curp",
+                    "line": 12,
+                    "type": "any"
+                },
+                {
+                    "name": "diezHuellas",
+                    "line": 13,
+                    "type": "any"
+                },
+                {
+                    "name": "dosHuellas",
+                    "line": 14,
+                    "type": "any"
+                },
+                {
+                    "name": "ine",
+                    "line": 15,
+                    "type": "object"
+                },
+                {
+                    "name": "rfc",
+                    "line": 10,
+                    "type": "any"
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "getFingerprint",
+                    "args": [
+                        {
+                            "name": "biometricType",
+                            "type": "string"
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "any",
+                    "typeParameters": [],
+                    "line": 22,
+                    "jsdoctags": [
+                        {
+                            "name": "biometricType",
+                            "type": "string",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 18
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit, Input } from '@angular/core';\n\n@Component({\n    selector: 'app-resumen',\n    templateUrl: './resumen.component.html',\n    styleUrls: ['./resumen.component.scss']\n})\nexport class ResumenComponent implements OnInit {\n\n    @Input() rfc: any;\n    @Input() cecoban: any;\n    @Input() curp: any;\n    @Input() diezHuellas: any;\n    @Input() dosHuellas: any;\n    @Input() ine: object;\n    constructor() { }\n\n    ngOnInit() {\n\n    }\n\n    getFingerprint(biometricType: string) {\n        const found = this.diezHuellas\n            .filter((h) => h.biometricType.toUpperCase() === biometricType.toUpperCase());\n        return (found || {})[0].imageUrl;\n    }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import \"../../scss/material-inputs.scss\";\n@import \"../../scss/theme.scss\";\n\n.corner {\n    font-size: 32pt;\n    font-weight: 100;\n    top: -9px;\n    position: relative;\n}\n\n.cloud {\n    top: 2px;\n    height: 25px;\n    width: 38px;\n    margin: 0 8px 0 0;\n}\n\n.padd-left {\n    padding-left: 59px;\n    flex-grow: 0.4;\n}\n\n.img-ine {\n    margin: 0 auto;\n    display: block;\n    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);\n    border-radius: 15px;\n}\n\n.content-resumen {\n    small {\n        font-size: 0.7rem;\n        font-weight: 300;\n        display: block;\n        width: 100%;\n        margin-left: 49px;\n    }\n\n    span.big {\n        font-size: 1.6rem;\n        line-height: 1.7;\n        font-weight: 300;\n\n        &.ok {\n            color: $color-ok;\n        }\n\n        &.error {\n            color: $color-error;\n        }\n    }\n\n    p {\n        line-height: 1.5rem;\n\n        span {\n            font-weight: bold;\n        }\n\n        i {\n            &::after {\n                content: \"\";\n                background-attachment: fixed;\n                background-size: 100%;\n                background-repeat: no-repeat;\n                background-attachment: local;\n                width: 23px;\n                height: 14px;\n                position: relative;\n                display: inline-block;\n                margin: 0 11px;\n            }\n\n            &.ok {\n                &::after {\n                    background-image: url(../../assets/icons/icons8-checkmark.svg);\n                    background-size: 70%;\n                }\n            }\n\n            &.ok-cloud {\n                &::after {\n                    @extend .cloud;\n                    background-image: url(../../assets/icons/icons8-cloud_checked.svg);\n                }\n            }\n\n            &.error {\n                &::after {\n                    background-image: url(../../assets/icons/close_icon.svg);\n                    background-size: 60%;\n                }\n            }\n\n            &.error-cloud {\n                &::after {\n                    @extend .cloud;\n                    background-image: url(../../assets/icons/icons8-cloud_cross.svg);\n                }\n            }\n        }\n    }\n}\n\n.container-huellas {\n    .dos-huellas {\n        width: 50%;\n        margin: 0 auto;\n        text-align: center;\n\n        .huella {\n            display: inline-block;\n            width: 150px;\n            height: 150px;\n            border-radius: 50%;\n            padding: 20px;\n            border: 1px solid $color-ok;\n\n            img {\n                height: 100%;\n            }\n        }\n    }\n\n    .diez-huellas {\n        margin: 0 auto;\n        text-align: center;\n        margin-bottom: 100px;\n\n        .huella {\n            position: absolute;\n            display: block;\n            width: 80px;\n            height: 80px;\n            border-radius: 50%;\n            padding: 10px;\n            border: 1px solid $color-ok;\n\n            img {\n                height: 100%;\n            }\n        }\n\n        .nombre-mano {\n            top: 180px;\n            position: absolute;\n            display: block;\n            width: 100%;\n        }\n\n        .mano-izquierda {\n            height: 230px;\n            position: relative;\n\n            .huella {\n                &:nth-child(1) {\n                    top: 90px;\n                }\n\n                &:nth-child(2) {\n                    top: 40px;\n                    left: 90px;\n                }\n\n                &:nth-child(3) {\n                    top: 0px;\n                    left: 170px;\n                }\n\n                &:nth-child(4) {\n                    top: 90px;\n                    left: 230px;\n                }\n            }\n        }\n\n        .mano-derecha {\n            position: relative; \n            height: 230px;\n\n\n            .huella {\n                &:nth-child(1) {\n                    top: 90px;\n                    left: 20px;\n                }\n\n                &:nth-child(2) {\n                    top: 0px;\n                    left: 90px;\n                }\n\n                &:nth-child(3) {\n                    top: 40px;\n                    left: 170px;\n                }\n\n                &:nth-child(4) {\n                    top: 90px;\n                    left: 250px;\n                }\n            }\n        }\n\n        .pulgares {\n            position: relative;\n            text-align: center;\n\n            .huella {\n                display: inline-block;\n                position: relative;\n                margin: 10px;\n                top: 40px;\n            }\n        }\n    }\n}\n",
+                    "styleUrl": "./resumen.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 15
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title is-2\">RESUMEN</h1>\n\n\n\n<div class=\"container\">\n    <div class=\"columns\">\n        <div class=\"column\">\n            <h2 class=\"title is-4\">INFORMACIÓN VALIDADA</h2>\n            <h3 class=\"subtitle\"> <span class=\"corner\">⌞</span>IDENTIFICACIÓN OFICIAL</h3>\n\n            <img src=\"https://via.placeholder.com/360x210/fff\"\n                alt=\"Frontal\"\n                class=\"img-ine\">\n            <br>\n            <br>\n            <img src=\"https://via.placeholder.com/360x210/fff\"\n                alt=\"Posterior\"\n                class=\"img-ine\">\n        </div>\n        <div class=\"column content-resumen\">\n            <p class=\"title is-5\"> <i class=\"ok-cloud\"></i>INE</p>\n            <p><i class=\"ok\"></i>No. OCR: <span>{{ine.back.CRC_SECTION}}</span></p>\n            <p><i class=\"ok\"></i>Apellido paterno: <span>{{ine.front.SURNAME_1}}</span></p>\n            <p><i class=\"ok\"></i>Apellido materno: <span>{{ine.front.SURNAME_2}}</span></p>\n            <p><i class=\"error\"></i>Nombre(s): <span>{{ine.front.NAME}}</span></p>\n            <p><i class=\"ok\"></i>Dirección: <span>{{ine.front.ADDRESS_1}}</span></p>\n            <p><i class=\"ok\"></i>No. emisión: <span>{{ine.front.EXPEDITION_DATE}}</span></p>\n            <p><i class=\"ok\"></i>Clave de elector: <span>{{ine.front.ELECTOR_ID}}</span></p>\n            <br>\n            <div class=\"columns\">\n                <div class=\"column padd-left\">\n                    <p>Porcentaje de<br>autenticidad</p>\n                </div>\n                <div class=\"column\">\n                    <span class=\"big error\">98%</span>\n                </div>\n            </div>\n\n            <div class=\"columns\">\n                <div class=\"column padd-left\">\n                    <p>Resultado <br>de validación</p>\n                </div>\n                <div class=\"column\">\n                    <span class=\"big ok\">Aceptado</span>\n                </div>\n            </div>\n            <small>Validación generada el 02/abril/2018 13:42 hrs</small>\n\n            <hr>\n\n            <p class=\"title is-5\"> <i class=\"ok-cloud\"></i>RENAPO</p>\n\n            <p><i class=\"ok\"></i>Apellido paterno: <span>{{curp.apellidoPaterno}}</span></p>\n            <p><i class=\"ok\"></i>Apellido materno: <span>{{curp.apellidoMaterno}}</span></p>\n            <p><i class=\"error\"></i>Nombre(s): <span>{{curp.nombre}}</span></p>\n            <p><i class=\"error\"></i>CURP: <span>{{curp.curp}}</span></p>\n            <br>\n            <small>Validación generada el 02/abril/2018 13:42 hrs</small>\n            <hr>\n\n\n            <p class=\"title is-5\"> <i class=\"error-cloud\"></i>SAT</p>\n            <p><i class=\"error\"></i>RFC: <span>{{rfc.rfc}}</span></p>\n\n            <br>\n            <small>Validación generada el 02/abril/2018 13:42\n                hrs</small>\n\n\n\n        </div>\n    </div>\n\n    <div class=\"container-huellas\">\n        <span class=\"subtitle is-4\">Huellas digitales</span><br>\n\n        <div class=\"columns dos-huellas\" *ngIf=\"dosHuellas\">\n            <div class=\"column\">\n                <div class=\"huella\">\n                    <img [src]=\"dosHuellas[0].imageUrl\"\n                        alt=\"leftIndex\">\n                </div>\n            </div>\n            <div class=\"column \">\n                <div class=\"huella\">\n                    <img [src]=\"dosHuellas[1].imageUrl\"\n                        alt=\"RightIndex\">\n                </div>\n            </div>\n        </div>\n\n\n\n        <div class=\"columns diez-huellas\" *ngIf=\"diezHuellas\">\n            <div class=\"column mano-izquierda\">\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('leftLittle')\"\n                        alt=\"LeftLittle\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('leftRing')\"\n                        alt=\"LeftRing\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('leftMiddle')\"\n                        alt=\"leftMiddle\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('leftIndex')\"\n                        alt=\"leftIndex\">\n                </div>\n\n                <span class=\"subtitle is-4 nombre-mano\">Izquierda</span>\n            </div>\n\n            <div class=\"column mano-derecha\">\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('rightIndex')\"\n                        alt=\"rightIndex\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('rightMiddle')\"\n                        alt=\"rightMiddle\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('rightRing')\"\n                        alt=\"rightRing\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('rightLittle')\"\n                        alt=\"rightLittle\">\n                </div>\n\n                <span class=\"subtitle is-4 nombre-mano\">Derecha</span>\n            </div>\n            <div class=\"column pulgares\">\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('LeftThumb')\"\n                        alt=\"LeftThumb\">\n                </div>\n                <div class=\"huella\">\n                    <img [src]=\"getFingerprint('RightThumb')\"\n                        alt=\"RightThumb\">\n                </div>\n                <span class=\"subtitle is-4 nombre-mano\">Pulgares</span>\n            </div>\n        </div>\n    </div>\n    <br><br>\n    <div class=\"has-text-right\">\n        <button class=\"button is-dark\">Aceptar</button>\n    </div>\n</div>"
+        },
+        {
+            "name": "StepperComponent",
+            "id": "component-StepperComponent-7c7208498ddf531f76e57766c3200d1f",
+            "file": "src/app/stepper/stepper.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-stepper",
+            "styleUrls": [
+                "./stepper.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./stepper.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [
+                {
+                    "name": "actualStepId",
+                    "defaultValue": "''",
+                    "line": 11
+                },
+                {
+                    "name": "steps",
+                    "defaultValue": "[]",
+                    "line": 10
+                }
+            ],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "getClass",
+                    "args": [
+                        {
+                            "name": "step",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "string",
+                    "typeParameters": [],
+                    "line": 36,
+                    "jsdoctags": [
+                        {
+                            "name": "step",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "getClassPosition",
+                    "args": [
+                        {
+                            "name": "index",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "\"end-left-step\" | \"end-right-step\" | \"step-squared\"",
+                    "typeParameters": [],
+                    "line": 17,
+                    "jsdoctags": [
+                        {
+                            "name": "index",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "getClassStatus",
+                    "args": [
+                        {
+                            "name": "index",
+                            "type": ""
+                        }
+                    ],
+                    "optional": false,
+                    "returnType": "\"\" | \" completed\" | \" is-active\"",
+                    "typeParameters": [],
+                    "line": 26,
+                    "jsdoctags": [
+                        {
+                            "name": "index",
+                            "type": "",
+                            "tagName": {
+                                "text": "param"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 15
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit, Input } from '@angular/core';\n\n@Component({\n  selector: 'app-stepper',\n  templateUrl: './stepper.component.html',\n  styleUrls: ['./stepper.component.scss']\n})\n\nexport class StepperComponent implements OnInit {\n  @Input() steps = [];\n  @Input() actualStepId = '';\n\n  constructor() { }\n\n  ngOnInit() { }\n\n  getClassPosition(index) {\n    if (index === 0) {\n      return 'end-left-step';\n    } else if (index === this.steps.length - 1) {\n      return 'end-right-step';\n    }\n    return 'step-squared';\n  }\n\n  getClassStatus(index) {\n    const indexActualState = this.steps.findIndex(element => element.id === this.actualStepId);\n    if (index < indexActualState) {\n      return ' completed';\n    } else if (index === indexActualState) {\n      return ' is-active';\n    }\n    return '';\n  }\n\n  getClass(step) {\n    let classString = '';\n    const index = this.steps.indexOf(step);\n    classString += this.getClassPosition(index);\n    classString += this.getClassStatus(index);\n    return classString;\n  }\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "@import '~bulma-o-steps/bulma-steps.scss';\n\n.steps-content p {\n    line-height: 1;\n    font-size: 10pt;\n}\n\n.end-left-step {\n    width: 100% !important;\n    border-top-left-radius: 15px !important;\n    border-bottom-left-radius: 15px !important;\n    border-top-right-radius: 0% !important;\n    border-bottom-right-radius: 0% !important;\n}\n\n.end-right-step {\n    width: 100% !important;\n    border-top-right-radius: 15px !important;\n    border-bottom-right-radius: 15px !important;\n    border-top-left-radius: 0% !important;\n    border-bottom-left-radius: 0% !important;\n}\n\n.step-squared {\n    width: 100% !important;\n    border-radius:0px !important;\n}\n\n.steps-segment {\n    margin-right: 4px !important;\n    &::after {\n        background-color: transparent !important;\n    }\n}\n\n.steps-marker.is-active {\n    color: transparent !important;\n    background-color: #63A70A !important;\n    border: none;\n}\n\n.steps-marker.completed {\n    color: white !important;\n    background-color: #558C49 !important;\n    border: none;\n}\n\n.steps-marker {\n    color: transparent !important;\n    background-color: transparent !important;\n    border: dashed 1px #D3D3D3;\n}",
+                    "styleUrl": "./stepper.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 11
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<ul class=\"steps is-balanced\">\n    <li class=\"steps-segment\" *ngFor=\"let step of steps\">\n        <span class=\"steps-marker\" [ngClass]=\"getClass(step)\">\n            <span class=\"icon\">\n                <i class=\"fas fa-check\"></i>\n            </span>\n        </span>\n        <div class=\"steps-content\">\n            <p [innerHTML]=\"step.description\"></p>\n        </div>\n    </li>\n</ul>"
+        },
+        {
+            "name": "ValidacionComponent",
+            "id": "component-ValidacionComponent-cd33c2e95e0e2009a48d262c1f4341b9",
+            "file": "src/app/validacion/validacion.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-validacion",
+            "styleUrls": [
+                "./validacion.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./validacion.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-validacion',\n  templateUrl: './validacion.component.html',\n  styleUrls: ['./validacion.component.scss']\n})\nexport class ValidacionComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./validacion.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<p>validacion works!</p>\n"
+        },
+        {
+            "name": "ValidacionDatosComponent",
+            "id": "component-ValidacionDatosComponent-9574285a4f163d4cfccc52af9b89c800",
+            "file": "src/app/validacion-datos/validacion-datos.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-validacion-datos",
+            "styleUrls": [
+                "./validacion-datos.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./validacion-datos.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-validacion-datos',\n  templateUrl: './validacion-datos.component.html',\n  styleUrls: ['./validacion-datos.component.scss']\n})\nexport class ValidacionDatosComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": ".contianer-docs {\n    background: #33644788;\n    height: 700px;\n}\n\n.columns {\n    justify-content: center;\n    align-items: center;\n    height: 100%;\n}\n\n.row {\n    margin-top: 38px;\n}",
+                    "styleUrl": "./validacion-datos.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<h1 class=\"title\">VALIDACIÓN DE DATOS</h1>\n\n<div class=\"contianer-docs\">\n    <div class=\"columns\">\n        <div class=\"column\">\n            <p class=\"has-text-centered\">\n                La información está siendo validada en la base biométrica.\n            </p>\n            <div class=\"rows\">\n                <div class=\"row\">\n                    <img src=\"https://via.placeholder.com/339x94\" alt=\"Logo\">\n                </div>\n            </div>\n        </div>\n    </div>\n</div>"
+        },
+        {
+            "name": "VerificacionComponent",
+            "id": "component-VerificacionComponent-c5e9b0f4a96ee959f62fe113099e59cc",
+            "file": "src/app/verificacion/verificacion.component.ts",
+            "encapsulation": [],
+            "entryComponents": [],
+            "inputs": [],
+            "outputs": [],
+            "providers": [],
+            "selector": "app-verificacion",
+            "styleUrls": [
+                "./verificacion.component.scss"
+            ],
+            "styles": [],
+            "templateUrl": [
+                "./verificacion.component.html"
+            ],
+            "viewProviders": [],
+            "inputsClass": [],
+            "outputsClass": [],
+            "propertiesClass": [],
+            "methodsClass": [
+                {
+                    "name": "ngOnInit",
+                    "args": [],
+                    "optional": false,
+                    "returnType": "void",
+                    "typeParameters": [],
+                    "line": 12
+                }
+            ],
+            "hostBindings": [],
+            "hostListeners": [],
+            "description": "",
+            "rawdescription": "",
+            "type": "component",
+            "sourceCode": "import { Component, OnInit } from '@angular/core';\n\n@Component({\n  selector: 'app-verificacion',\n  templateUrl: './verificacion.component.html',\n  styleUrls: ['./verificacion.component.scss']\n})\nexport class VerificacionComponent implements OnInit {\n\n  constructor() { }\n\n  ngOnInit() {\n  }\n\n}\n",
+            "assetsDirs": [],
+            "styleUrlsData": [
+                {
+                    "data": "",
+                    "styleUrl": "./verificacion.component.scss"
+                }
+            ],
+            "stylesData": "",
+            "constructorObj": {
+                "name": "constructor",
+                "description": "",
+                "args": [],
+                "line": 8
+            },
+            "implements": [
+                "OnInit"
+            ],
+            "templateData": "<p>verificacion works!</p>\n"
+        }
+    ],
+    "modules": [
+        {
+            "name": "AppModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": [
+                        {
+                            "name": "ActivacionPerfilesComponent"
+                        },
+                        {
+                            "name": "AppComponent"
+                        },
+                        {
+                            "name": "AutenticacionComponent"
+                        },
+                        {
+                            "name": "ConsultaClienteComponent"
+                        },
+                        {
+                            "name": "DocumentsResultComponent"
+                        },
+                        {
+                            "name": "DocumentsScanComponent"
+                        },
+                        {
+                            "name": "EscaneoDiezHuellasComponent"
+                        },
+                        {
+                            "name": "LoginComponent"
+                        },
+                        {
+                            "name": "LoginHuellaComponent"
+                        },
+                        {
+                            "name": "MenuComponent"
+                        },
+                        {
+                            "name": "OnboardingComponent"
+                        },
+                        {
+                            "name": "RegistrosEncontradosComponent"
+                        },
+                        {
+                            "name": "ReportesComponent"
+                        },
+                        {
+                            "name": "ResultAlertComponent"
+                        },
+                        {
+                            "name": "ResumenComponent"
+                        },
+                        {
+                            "name": "StepperComponent"
+                        },
+                        {
+                            "name": "ValidacionComponent"
+                        },
+                        {
+                            "name": "ValidacionDatosComponent"
+                        },
+                        {
+                            "name": "VerificacionComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "imports",
+                    "elements": [
+                        {
+                            "name": "AppRoutingModule"
+                        }
+                    ]
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": [
+                        {
+                            "name": "AppComponent"
+                        }
+                    ]
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        },
+        {
+            "name": "AppRoutingModule",
+            "children": [
+                {
+                    "type": "providers",
+                    "elements": []
+                },
+                {
+                    "type": "declarations",
+                    "elements": []
+                },
+                {
+                    "type": "imports",
+                    "elements": []
+                },
+                {
+                    "type": "exports",
+                    "elements": []
+                },
+                {
+                    "type": "bootstrap",
+                    "elements": []
+                },
+                {
+                    "type": "classes",
+                    "elements": []
+                }
+            ]
+        }
+    ],
+    "miscellaneous": {
+        "variables": [
+            {
+                "name": "apiUrl",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/services/middleware/middleware.service.ts",
+                "type": "string",
+                "defaultValue": "environment.apiUrl"
+            },
+            {
+                "name": "apiUrl",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/services/login.service.ts",
+                "type": "",
+                "defaultValue": "environment.apiUrl"
+            },
+            {
+                "name": "conDiezHuellas",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "",
+                "defaultValue": "() => ({\n    component: ResumenComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        ine: object('ine', ine),\n        curp: object('curp', curp),\n        rfc: object('rfc', rfc),\n        diezHuellas: object('diezHuellas', diezHuellas),\n        // value: files('img', '.xlsx, .pdf', [])\n    },\n})"
+            },
+            {
+                "name": "conDosHuellas",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "",
+                "defaultValue": "() => ({\n    component: ResumenComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        ine: object('ine', ine),\n        curp: object('curp', curp),\n        rfc: object('rfc', rfc),\n        dosHuellas: object('dosHuellas', dosHuellas),\n\n    },\n})"
+            },
+            {
+                "name": "consultaClientePorId",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/consulta-cliente/consulta-cliente.component.stories.ts",
+                "type": "",
+                "defaultValue": "() => ({\n    component: ConsultaClienteComponent,\n    props: {\n        titulo: text('text', 'LOCALIZACIÓN DEL CLIENTE')\n    },\n})"
+            },
+            {
+                "name": "context",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/test.ts",
+                "type": "",
+                "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+            },
+            {
+                "name": "curp",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "object",
+                "defaultValue": "{\n    curp: 'ABCDEGW442fG23232',\n    curpValido: true,\n    nombre: 'DIEGO',\n    apellidoPaterno: 'ORTIZ',\n    apellidoMaterno: 'PAREDES',\n    fechaValidacion: '2018-02-27T14:11:35',\n    codigoRespuestaCCB: 'CRGEN000',\n    descripcionRespuestaCCB: 'El proceso de validación de CURP se ha realizado exitosamente.'\n}"
+            },
+            {
+                "name": "diezHuellas",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "[]",
+                "defaultValue": "[\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/FF6F00',\n        biometricType: 'RightIndex'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/D84315',\n        biometricType: 'RightMiddle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/64DD17',\n        biometricType: 'RightRing'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/651FFF',\n        biometricType: 'RightLittle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/651FFF',\n        biometricType: 'LeftLittle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/64DD17',\n        biometricType: 'LeftRing'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/D84315',\n        biometricType: 'LeftMiddle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/FF6F00',\n        biometricType: 'LeftIndex'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/1DE9B6',\n        biometricType: 'RightThumb'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/1DE9B6',\n        biometricType: 'LeftThumb'\n    }\n]"
+            },
+            {
+                "name": "dosHuellas",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "[]",
+                "defaultValue": "[\n    {\n        imageUrl: 'https://via.placeholder.com/100x150/FF6F00',\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/100x150/D84315',\n    }\n]"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.prod.ts",
+                "type": "object",
+                "defaultValue": "{\n  production: true\n}"
+            },
+            {
+                "name": "environment",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/environments/environment.ts",
+                "type": "object",
+                "defaultValue": "{\n  apiUrl: 'http://localhost:3051/',\n  production: false\n}"
+            },
+            {
+                "name": "ine",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "object",
+                "defaultValue": "{\n    front: {\n        TYPE: 'IDENTITY',\n        SIDE: '1',\n        EXPEDITOR: 'MEX',\n        NATIONALITY: 'MEX',\n        NAME: 'MARIANA ITZEL',\n        SURNAME_1: 'CARMONA',\n        SURNAME_2: 'GONZALEZ',\n        ID_NUMBER: 'CRGNMR86112109M900',\n        SIGNATURE: null,\n        ADDRESS_1: 'COL PRADO COAPA OA SECCION 14357',\n        ADDRESS_2: 'TLALPAN',\n        BIRTHDATE: '11-21-1986',\n        SEX: 'F',\n        STATE: '09',\n        LOCALITY: '0001',\n        ELECTOR_ID: 'CRGNMR86112109M900',\n        REGISTRY_YEAR: '2006 02',\n        MUNICIPALITY: '012',\n        EXPEDITION_DATE: '2016',\n        SECTION: '4048',\n        EXPIRY: '2026',\n        CURP: 'CAGM861121MDFRNR03'\n    },\n    back: {\n        TYPE: 'IDENTITY',\n        SIDE: '2',\n        EXPEDITOR: 'MEX',\n        NATIONALITY: 'MEX',\n        NAME: 'MARIANA ITZE',\n        SURNAME: 'CARMONA GONZALEZ',\n        DOC_NUMBER: '152069887',\n        BIRTHDATE: '11-21-86',\n        EXPIRY: '12-31-26',\n        SEX: 'F',\n        CRC_SECTION: '4048074653910'\n    }\n}"
+            },
+            {
+                "name": "require",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/test.ts",
+                "type": "any"
+            },
+            {
+                "name": "respuestaCecoban",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "object",
+                "defaultValue": "{\n    minutiaeResponse: {\n        codigoRespuestaMinucia: 0,\n        similitud2: '0.0%',\n        similitud7: '0.0%'\n    },\n    codigoRespuestaCCB: 'CRGEN000',\n    fechaHoraPeticion: '2018-04-20T14:41:31.119',\n    dataResponse: {\n        codigoRespuestaDatos: 0,\n        respuestaComparacion: {\n            ocr: true,\n            nombre: true,\n            apellidoPaterno: false,\n            apellidoMaterno: true,\n            anioRegistro: null,\n            anioEmision: null,\n            numeroEmisionCredencial: true,\n            claveElector: true,\n            curp: null\n        },\n        respuestaSituacionRegistral: {\n            tipoSituacionRegistral: 'NO_VIGENTE',\n            tipoReporteRoboExtravio: 'REPORTE_DE_EXTRAVIO_TEMPORAL'\n        }\n    },\n}"
+            },
+            {
+                "name": "rfc",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/resumen/resumen.component.stories.ts",
+                "type": "object",
+                "defaultValue": "{\n    rfc: 'GORl3344225b3',\n    RfcValido: true,\n    FechaValidacion: '2017-07-04T11:50:58',\n    CodigoRespuestaCCB: 'CRGEN000',\n    DescripcionRespuestaCCB: 'El proceso de validación de RFC se ha realizado exitosamente.'\n}"
+            },
+            {
+                "name": "withError",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/result-alert/result-alert.component.stories.ts",
+                "type": "",
+                "defaultValue": "() => ({\n    component: ResultAlertComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        alertType: 'error'\n    },\n})"
+            },
+            {
+                "name": "withSuccess",
+                "ctype": "miscellaneous",
+                "subtype": "variable",
+                "file": "src/app/result-alert/result-alert.component.stories.ts",
+                "type": "",
+                "defaultValue": "() => ({\n    component: ResultAlertComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        alertType: 'success'\n    },\n})"
+            }
+        ],
+        "functions": [],
+        "typealiases": [],
+        "enumerations": [
+            {
+                "name": "apiEndpoint",
+                "childs": [
+                    {
+                        "name": "consultaClienteId",
+                        "value": "/cliente/consultaPorID"
+                    }
+                ],
+                "ctype": "miscellaneous",
+                "subtype": "enum",
+                "description": "",
+                "file": "src/app/services/configuration.service.ts"
+            }
+        ],
+        "groupedVariables": {
+            "src/app/services/middleware/middleware.service.ts": [
+                {
+                    "name": "apiUrl",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/services/middleware/middleware.service.ts",
+                    "type": "string",
+                    "defaultValue": "environment.apiUrl"
+                }
+            ],
+            "src/app/services/login.service.ts": [
+                {
+                    "name": "apiUrl",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/services/login.service.ts",
+                    "type": "",
+                    "defaultValue": "environment.apiUrl"
+                }
+            ],
+            "src/app/resumen/resumen.component.stories.ts": [
+                {
+                    "name": "conDiezHuellas",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "",
+                    "defaultValue": "() => ({\n    component: ResumenComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        ine: object('ine', ine),\n        curp: object('curp', curp),\n        rfc: object('rfc', rfc),\n        diezHuellas: object('diezHuellas', diezHuellas),\n        // value: files('img', '.xlsx, .pdf', [])\n    },\n})"
+                },
+                {
+                    "name": "conDosHuellas",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "",
+                    "defaultValue": "() => ({\n    component: ResumenComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        ine: object('ine', ine),\n        curp: object('curp', curp),\n        rfc: object('rfc', rfc),\n        dosHuellas: object('dosHuellas', dosHuellas),\n\n    },\n})"
+                },
+                {
+                    "name": "curp",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "object",
+                    "defaultValue": "{\n    curp: 'ABCDEGW442fG23232',\n    curpValido: true,\n    nombre: 'DIEGO',\n    apellidoPaterno: 'ORTIZ',\n    apellidoMaterno: 'PAREDES',\n    fechaValidacion: '2018-02-27T14:11:35',\n    codigoRespuestaCCB: 'CRGEN000',\n    descripcionRespuestaCCB: 'El proceso de validación de CURP se ha realizado exitosamente.'\n}"
+                },
+                {
+                    "name": "diezHuellas",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "[]",
+                    "defaultValue": "[\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/FF6F00',\n        biometricType: 'RightIndex'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/D84315',\n        biometricType: 'RightMiddle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/64DD17',\n        biometricType: 'RightRing'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/651FFF',\n        biometricType: 'RightLittle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/651FFF',\n        biometricType: 'LeftLittle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/64DD17',\n        biometricType: 'LeftRing'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/D84315',\n        biometricType: 'LeftMiddle'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/FF6F00',\n        biometricType: 'LeftIndex'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/1DE9B6',\n        biometricType: 'RightThumb'\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/40x60/1DE9B6',\n        biometricType: 'LeftThumb'\n    }\n]"
+                },
+                {
+                    "name": "dosHuellas",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "[]",
+                    "defaultValue": "[\n    {\n        imageUrl: 'https://via.placeholder.com/100x150/FF6F00',\n    },\n    {\n        imageUrl: 'https://via.placeholder.com/100x150/D84315',\n    }\n]"
+                },
+                {
+                    "name": "ine",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "object",
+                    "defaultValue": "{\n    front: {\n        TYPE: 'IDENTITY',\n        SIDE: '1',\n        EXPEDITOR: 'MEX',\n        NATIONALITY: 'MEX',\n        NAME: 'MARIANA ITZEL',\n        SURNAME_1: 'CARMONA',\n        SURNAME_2: 'GONZALEZ',\n        ID_NUMBER: 'CRGNMR86112109M900',\n        SIGNATURE: null,\n        ADDRESS_1: 'COL PRADO COAPA OA SECCION 14357',\n        ADDRESS_2: 'TLALPAN',\n        BIRTHDATE: '11-21-1986',\n        SEX: 'F',\n        STATE: '09',\n        LOCALITY: '0001',\n        ELECTOR_ID: 'CRGNMR86112109M900',\n        REGISTRY_YEAR: '2006 02',\n        MUNICIPALITY: '012',\n        EXPEDITION_DATE: '2016',\n        SECTION: '4048',\n        EXPIRY: '2026',\n        CURP: 'CAGM861121MDFRNR03'\n    },\n    back: {\n        TYPE: 'IDENTITY',\n        SIDE: '2',\n        EXPEDITOR: 'MEX',\n        NATIONALITY: 'MEX',\n        NAME: 'MARIANA ITZE',\n        SURNAME: 'CARMONA GONZALEZ',\n        DOC_NUMBER: '152069887',\n        BIRTHDATE: '11-21-86',\n        EXPIRY: '12-31-26',\n        SEX: 'F',\n        CRC_SECTION: '4048074653910'\n    }\n}"
+                },
+                {
+                    "name": "respuestaCecoban",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "object",
+                    "defaultValue": "{\n    minutiaeResponse: {\n        codigoRespuestaMinucia: 0,\n        similitud2: '0.0%',\n        similitud7: '0.0%'\n    },\n    codigoRespuestaCCB: 'CRGEN000',\n    fechaHoraPeticion: '2018-04-20T14:41:31.119',\n    dataResponse: {\n        codigoRespuestaDatos: 0,\n        respuestaComparacion: {\n            ocr: true,\n            nombre: true,\n            apellidoPaterno: false,\n            apellidoMaterno: true,\n            anioRegistro: null,\n            anioEmision: null,\n            numeroEmisionCredencial: true,\n            claveElector: true,\n            curp: null\n        },\n        respuestaSituacionRegistral: {\n            tipoSituacionRegistral: 'NO_VIGENTE',\n            tipoReporteRoboExtravio: 'REPORTE_DE_EXTRAVIO_TEMPORAL'\n        }\n    },\n}"
+                },
+                {
+                    "name": "rfc",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/resumen/resumen.component.stories.ts",
+                    "type": "object",
+                    "defaultValue": "{\n    rfc: 'GORl3344225b3',\n    RfcValido: true,\n    FechaValidacion: '2017-07-04T11:50:58',\n    CodigoRespuestaCCB: 'CRGEN000',\n    DescripcionRespuestaCCB: 'El proceso de validación de RFC se ha realizado exitosamente.'\n}"
+                }
+            ],
+            "src/app/consulta-cliente/consulta-cliente.component.stories.ts": [
+                {
+                    "name": "consultaClientePorId",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/consulta-cliente/consulta-cliente.component.stories.ts",
+                    "type": "",
+                    "defaultValue": "() => ({\n    component: ConsultaClienteComponent,\n    props: {\n        titulo: text('text', 'LOCALIZACIÓN DEL CLIENTE')\n    },\n})"
+                }
+            ],
+            "src/test.ts": [
+                {
+                    "name": "context",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/test.ts",
+                    "type": "",
+                    "defaultValue": "require.context('./', true, /\\.spec\\.ts$/)"
+                },
+                {
+                    "name": "require",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/test.ts",
+                    "type": "any"
+                }
+            ],
+            "src/environments/environment.prod.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.prod.ts",
+                    "type": "object",
+                    "defaultValue": "{\n  production: true\n}"
+                }
+            ],
+            "src/environments/environment.ts": [
+                {
+                    "name": "environment",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/environments/environment.ts",
+                    "type": "object",
+                    "defaultValue": "{\n  apiUrl: 'http://localhost:3051/',\n  production: false\n}"
+                }
+            ],
+            "src/app/result-alert/result-alert.component.stories.ts": [
+                {
+                    "name": "withError",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/result-alert/result-alert.component.stories.ts",
+                    "type": "",
+                    "defaultValue": "() => ({\n    component: ResultAlertComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        alertType: 'error'\n    },\n})"
+                },
+                {
+                    "name": "withSuccess",
+                    "ctype": "miscellaneous",
+                    "subtype": "variable",
+                    "file": "src/app/result-alert/result-alert.component.stories.ts",
+                    "type": "",
+                    "defaultValue": "() => ({\n    component: ResultAlertComponent,\n    props: {\n        textAlert: text('text', 'Texto de prueba'),\n        alertType: 'success'\n    },\n})"
+                }
+            ]
+        },
+        "groupedFunctions": {},
+        "groupedEnumerations": {
+            "src/app/services/configuration.service.ts": [
+                {
+                    "name": "apiEndpoint",
+                    "childs": [
+                        {
+                            "name": "consultaClienteId",
+                            "value": "/cliente/consultaPorID"
+                        }
+                    ],
+                    "ctype": "miscellaneous",
+                    "subtype": "enum",
+                    "description": "",
+                    "file": "src/app/services/configuration.service.ts"
+                }
+            ]
+        },
+        "groupedTypeAliases": {}
+    },
+    "routes": {
+        "name": "<root>",
+        "kind": "module",
+        "className": "AppModule",
+        "children": [
+            {
+                "name": "routes",
+                "filename": "src/app/app-routing.module.ts",
+                "module": "AppRoutingModule",
+                "children": [
+                    {
+                        "path": "login",
+                        "component": "LoginHuellaComponent"
+                    },
+                    {
+                        "path": "onboarding",
+                        "component": "OnboardingComponent"
+                    },
+                    {
+                        "path": "verificacion",
+                        "component": "VerificacionComponent"
+                    },
+                    {
+                        "path": "validacion",
+                        "component": "ValidacionComponent"
+                    },
+                    {
+                        "path": "autenticacion",
+                        "component": "AutenticacionComponent"
+                    },
+                    {
+                        "path": "activacionPerfiles",
+                        "component": "ActivacionPerfilesComponent"
+                    },
+                    {
+                        "path": "reportes",
+                        "component": "ReportesComponent"
+                    }
+                ],
+                "kind": "module"
+            }
+        ]
+    },
+    "coverage": {
+        "count": 1,
+        "status": "low",
+        "files": [
+            {
+                "filePath": "e2e/src/app.po.ts",
+                "type": "class",
+                "linktype": "classe",
+                "name": "AppPage",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/activacion-perfiles/activacion-perfiles.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ActivacionPerfilesComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/app.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "AppComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/5",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/autenticacion/autenticacion.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "AutenticacionComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/consulta-cliente/consulta-cliente.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "consultaClientePorId",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/consulta-cliente/consulta-cliente.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ConsultaClienteComponent",
+                "coveragePercent": 20,
+                "coverageCount": "1/5",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/documents-result/documents-result.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "DocumentsResultComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/documents-scan/documents-scan.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "DocumentsScanComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/escaneo-diez-huellas/escaneo-diez-huellas.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "EscaneoDiezHuellasComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/login-huella/login-huella.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "LoginHuellaComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/login/login.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "LoginComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/8",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/menu/menu.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "MenuComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/6",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/onboarding/onboarding.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "OnboardingComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/registros-encontrados/registros-encontrados.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "RegistrosEncontradosComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/reportes/reportes.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ReportesComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/result-alert/result-alert.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "withError",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/result-alert/result-alert.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "withSuccess",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/result-alert/result-alert.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ResultAlertComponent",
+                "coveragePercent": 40,
+                "coverageCount": "2/5",
+                "status": "medium"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "conDiezHuellas",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "conDosHuellas",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "curp",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "diezHuellas",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "dosHuellas",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "ine",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "respuestaCecoban",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.stories.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "rfc",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/resumen/resumen.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ResumenComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/10",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/services/configuration.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "ConfigurationService",
+                "coveragePercent": 0,
+                "coverageCount": "0/2",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/services/login.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "LoginService",
+                "coveragePercent": 0,
+                "coverageCount": "0/7",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/services/login.service.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "apiUrl",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/services/middleware/middleware.service.ts",
+                "type": "injectable",
+                "linktype": "injectable",
+                "name": "MiddlewareService",
+                "coveragePercent": 0,
+                "coverageCount": "0/5",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/services/middleware/middleware.service.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "apiUrl",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/stepper/stepper.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "StepperComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/8",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/validacion-datos/validacion-datos.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ValidacionDatosComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/validacion/validacion.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "ValidacionComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/app/verificacion/verificacion.component.ts",
+                "type": "component",
+                "linktype": "component",
+                "name": "VerificacionComponent",
+                "coveragePercent": 0,
+                "coverageCount": "0/3",
+                "status": "low"
+            },
+            {
+                "filePath": "src/environments/environment.prod.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "environment",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/environments/environment.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "environment",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "context",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            },
+            {
+                "filePath": "src/test.ts",
+                "type": "variable",
+                "linktype": "miscellaneous",
+                "linksubtype": "variable",
+                "name": "require",
+                "coveragePercent": 0,
+                "coverageCount": "0/1",
+                "status": "low"
+            }
+        ]
+    }
+}
