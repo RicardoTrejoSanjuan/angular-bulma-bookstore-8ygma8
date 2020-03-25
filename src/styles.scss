@@ -1,0 +1,27 @@
+/* You can add global styles to this file, and also import other style files
+@import '~bulma';
+@import '~bulma-extensions/bulma-switch/src/sass/index';
+@import '~bulma-extensions/bulma-tooltip/src/sass/index';
+@import '~bulma-extensions/bulma-calendar/src/sass/index';
+@import '~@wizishop/ng-wizi-bulma/ng-wizi-bulma';
+*/
+@import './scss/theme.scss';
+@import './scss/utils.scss';
+
+html {
+    height: 100%;
+}
+
+body {
+    height: 100%;
+    width: 100%;
+    // overflow: hidden;
+    padding: 0;
+    margin: 0;
+    line-height: inherit;
+}
+
+router-outlet + * {
+    display: block;
+    margin-left: 100px;
+}

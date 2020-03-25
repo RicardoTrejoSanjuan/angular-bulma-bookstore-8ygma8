@@ -1,0 +1,35 @@
+<div class="contianer-docs">
+    <div class="columns">
+        <div class="column ">
+            <div class="selector">
+                <span>Selecciona el tipo de identificador del cliente</span>
+                <br>
+                <form #form="ngForm" class="select">
+                    <select name="options" ngModel>
+                        <option value="" disabled>Selecciona una opción</option>
+                        <option *ngFor="let option of options" [ngValue]="option">
+                            {{ option.name }}
+                        </option>
+                    </select>
+                </form>
+            </div>
+        </div>
+        <div class="column">
+            <div class="selector">
+                <span>Ingrese el número del identificador seleccionado</span>
+                <br>
+                <div class="control">
+                    <input class="input" type="text" required>
+                </div>
+                <!-- <form #f="ngForm" class="select">
+                    <select name="options" ngModel>
+                        <option value="" disabled>Selecciona una opción</option>
+                        <option *ngFor="let option of options" [ngValue]="option">
+                            {{ option.name }}
+                        </option>
+                    </select>
+                </form> -->
+            </div>
+        </div>
+    </div>
+</div>

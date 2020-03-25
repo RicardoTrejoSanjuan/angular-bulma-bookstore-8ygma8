@@ -1,0 +1,16 @@
+.rows {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    text-align: center;
+
+    .row {
+        &:nth-child(1) {
+            flex-grow: 1;
+        }
+
+        &:nth-child(2) {
+            flex-grow: 2;
+        }
+    }
+}
